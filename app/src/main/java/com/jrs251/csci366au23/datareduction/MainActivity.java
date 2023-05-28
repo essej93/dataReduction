@@ -132,10 +132,11 @@ public class MainActivity extends AppCompatActivity {
                 int p3 = imageBmap.getPixel(2 * x, 2 * y + 1);
                 int p4 = imageBmap.getPixel(2 * x + 1, 2 * y + 1);
 
-
+                // gets average pixel values
                 int avgCb = (Color.green(p1) + Color.green(p2) + Color.green(p3) + Color.green(p4)) / 4;
                 int avgCr = (Color.blue(p1) + Color.blue(p2) + Color.blue(p3) + Color.blue(p4)) / 4;
 
+                // sets new pixel values
                 cs420Y.setPixel(2 * x, 2 * y, Color.rgb(Color.red(p1), Color.red(p1), Color.red(p1)));
                 cs420Y.setPixel(2 * x + 1, 2 * y, Color.rgb(Color.red(p2), Color.red(p2), Color.red(p2)));
                 cs420Y.setPixel(2 * x, 2 * y + 1, Color.rgb(Color.red(p3), Color.red(p3), Color.red(p3)));
