@@ -17,7 +17,10 @@ public class MainActivity extends AppCompatActivity {
     Bitmap originalImage;
     ImageView imageLeft, imageMiddle, imageRight;
     RadioGroup radioGroup;
-    Bitmap cs420Left, cs420Mid, cs420Right;
+    Bitmap cs420Y, cs420Cb, cs420Cr;
+    Bitmap cs411Y, cs411Cb, cs411Cr;
+    Bitmap P2Y, P2refY, P2difY;
+    Bitmap P4Y, P4refY, P4difY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +57,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // hides image views to only show starting original image
         imageMiddle.setVisibility(View.GONE);
         imageRight.setVisibility(View.GONE);
-        imageLeft.setImageResource(R.drawable.flat_small);
+        imageLeft.setImageResource(R.drawable.flat_small); // sets image view to default image
     }
 
     //Convert RGB image to YCbCr
@@ -68,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         //create new bitmap with the same size as src to store YCbCr, all YCbCr values are in [0, 255]
         // use R channel for Y, G channel for Cb and B channel for Cr
         Bitmap ycbcrBitmap = Bitmap.createBitmap((width), height,Bitmap.Config.ARGB_8888);
+
         for (int y=0; y<height;y++) {
             for (int x = 0; x < width; x++) {
                 int pval = src.getPixel(x, y);
@@ -93,27 +98,29 @@ public class MainActivity extends AppCompatActivity {
         return YCbCr;
     }
 
+    // function to apply 4:2:0 chroma sub sampling
     private void convertCS420(){
 
 
-//         checks if bitmap has already been generated so it doesnt remake it
-//         if it has already been created just sets the image view to that bitmap
+        //checks if bitmap has already been generated so it doesnt remake it
+        //if it has already been created just sets the image view to that bitmap
 
-//        if(cs420Mid != null){
-//            imageLeft.setImageBitmap(cs420Left);
-//            imageMiddle.setImageBitmap(cs420Mid);
-//            imageRight.setImageBitmap(cs420Right);
-//        }
+        if(cs420Y != null){
+            imageLeft.setImageBitmap(cs420Y);
+            imageMiddle.setImageBitmap(cs420Cb);
+            imageRight.setImageBitmap(cs420Cr);
+            return;
+        }
 
         Bitmap imageBmap = toYCbCr(originalImage);
         int width = originalImage.getWidth();
         int height = originalImage.getHeight();
 
-        Bitmap Y = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        cs420Y = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
         // bit maps for Cb/Cr width and height are reduced by factor of 2
-        Bitmap Cb420 = Bitmap.createBitmap(width/2, height/2, Bitmap.Config.ARGB_8888);
-        Bitmap Cr420 = Bitmap.createBitmap(width/2, height/2, Bitmap.Config.ARGB_8888);
+        cs420Cb = Bitmap.createBitmap(width/2, height/2, Bitmap.Config.ARGB_8888);
+        cs420Cr = Bitmap.createBitmap(width/2, height/2, Bitmap.Config.ARGB_8888);
 
         // for loop to apply 4:2:0 sub sampling in the YCbCr colour space
         for(int x = 0; x < width/2; x++){
@@ -129,18 +136,18 @@ public class MainActivity extends AppCompatActivity {
                 int avgCb = (Color.green(p1) + Color.green(p2) + Color.green(p3) + Color.green(p4)) / 4;
                 int avgCr = (Color.blue(p1) + Color.blue(p2) + Color.blue(p3) + Color.blue(p4)) / 4;
 
-                Y.setPixel(2 * x, 2 * y, Color.rgb(Color.red(p1), Color.red(p1), Color.red(p1)));
-                Y.setPixel(2 * x + 1, 2 * y, Color.rgb(Color.red(p2), Color.red(p2), Color.red(p2)));
-                Y.setPixel(2 * x, 2 * y + 1, Color.rgb(Color.red(p3), Color.red(p3), Color.red(p3)));
-                Y.setPixel(2 * x + 1, 2 * y + 1, Color.rgb(Color.red(p4), Color.red(p4), Color.red(p4)));
-                Cb420.setPixel(x,y,Color.rgb(avgCb,avgCb,avgCb));
-                Cr420.setPixel(x,y,Color.rgb(avgCr,avgCr,avgCr));
+                cs420Y.setPixel(2 * x, 2 * y, Color.rgb(Color.red(p1), Color.red(p1), Color.red(p1)));
+                cs420Y.setPixel(2 * x + 1, 2 * y, Color.rgb(Color.red(p2), Color.red(p2), Color.red(p2)));
+                cs420Y.setPixel(2 * x, 2 * y + 1, Color.rgb(Color.red(p3), Color.red(p3), Color.red(p3)));
+                cs420Y.setPixel(2 * x + 1, 2 * y + 1, Color.rgb(Color.red(p4), Color.red(p4), Color.red(p4)));
+                cs420Cb.setPixel(x,y,Color.rgb(avgCb,avgCb,avgCb));
+                cs420Cr.setPixel(x,y,Color.rgb(avgCr,avgCr,avgCr));
             }
         }
 
-        imageLeft.setImageBitmap(Y);
-        imageMiddle.setImageBitmap(Cb420);
-        imageRight.setImageBitmap(Cr420);
+        imageLeft.setImageBitmap(cs420Y);
+        imageMiddle.setImageBitmap(cs420Cb);
+        imageRight.setImageBitmap(cs420Cr);
 
         imageLeft.setVisibility(View.VISIBLE);
         imageMiddle.setVisibility(View.VISIBLE);
@@ -149,29 +156,32 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // function to apply 4:2:0 chroma sub sampling
     private void convert411(){
 
+        //checks if bitmap has already been generated so it doesnt remake it
+        //if it has already been created just sets the image view to that bitmap
 
-//         checks if bitmap has already been generated so it doesnt remake it
-//         if it has already been created just sets the image view to that bitmap
+        if(cs411Y != null){
+            imageLeft.setImageBitmap(cs411Y);
+            imageMiddle.setImageBitmap(cs411Cb);
+            imageRight.setImageBitmap(cs411Cr);
+            return;
+        }
 
-//        if(cs420Mid != null){
-//            imageLeft.setImageBitmap(cs420Left);
-//            imageMiddle.setImageBitmap(cs420Mid);
-//            imageRight.setImageBitmap(cs420Right);
-//        }
-
+        // converts image to YCbCr
         Bitmap imageBmap = toYCbCr(originalImage);
         int width = originalImage.getWidth();
         int height = originalImage.getHeight();
 
-        Bitmap Y = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        // creates Y bitmap
+        cs411Y = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
         // bit maps for Cb/Cr width is reduced by factor of 4
-        Bitmap Cb411 = Bitmap.createBitmap(width/4, height, Bitmap.Config.ARGB_8888);
-        Bitmap Cr411 = Bitmap.createBitmap(width/4, height, Bitmap.Config.ARGB_8888);
+        cs411Cb = Bitmap.createBitmap(width/4, height, Bitmap.Config.ARGB_8888);
+        cs411Cr = Bitmap.createBitmap(width/4, height, Bitmap.Config.ARGB_8888);
 
-
+        // for loop iterates through pixels
         for(int x = 0; x < width/4; x++){
             for(int y = 0; y < height; y++){
 
@@ -181,64 +191,90 @@ public class MainActivity extends AppCompatActivity {
                 int p3 = imageBmap.getPixel(4 * x + 2, y );
                 int p4 = imageBmap.getPixel(4 * x + 3, y);
 
-
+                // finds average pixel values
                 int avgCb = (Color.green(p1) + Color.green(p2) + Color.green(p3) + Color.green(p4)) / 4;
                 int avgCr = (Color.blue(p1) + Color.blue(p2) + Color.blue(p3) + Color.blue(p4)) / 4;
 
-                Y.setPixel(4 * x, y, Color.rgb(Color.red(p1), Color.red(p1), Color.red(p1)));
-                Y.setPixel(4 * x + 1, y, Color.rgb(Color.red(p2), Color.red(p2), Color.red(p2)));
-                Y.setPixel(4 * x+ 2, y, Color.rgb(Color.red(p3), Color.red(p3), Color.red(p3)));
-                Y.setPixel(4 * x + 3, y, Color.rgb(Color.red(p4), Color.red(p4), Color.red(p4)));
-                Cb411.setPixel(x,y,Color.rgb(avgCb,avgCb,avgCb));
-                Cr411.setPixel(x,y,Color.rgb(avgCr,avgCr,avgCr));
+                // sets Y pixels
+                cs411Y.setPixel(4 * x, y, Color.rgb(Color.red(p1), Color.red(p1), Color.red(p1)));
+                cs411Y.setPixel(4 * x + 1, y, Color.rgb(Color.red(p2), Color.red(p2), Color.red(p2)));
+                cs411Y.setPixel(4 * x+ 2, y, Color.rgb(Color.red(p3), Color.red(p3), Color.red(p3)));
+                cs411Y.setPixel(4 * x + 3, y, Color.rgb(Color.red(p4), Color.red(p4), Color.red(p4)));
+
+                // sets Cb and Cr pixels
+                cs411Cb.setPixel(x,y,Color.rgb(avgCb,avgCb,avgCb));
+                cs411Cr.setPixel(x,y,Color.rgb(avgCr,avgCr,avgCr));
             }
         }
 
-        imageLeft.setImageBitmap(Y);
-        imageMiddle.setImageBitmap(Cb411);
-        imageRight.setImageBitmap(Cr411);
+        // updated image views
+        imageLeft.setImageBitmap(cs411Y);
+        imageMiddle.setImageBitmap(cs411Cb);
+        imageRight.setImageBitmap(cs411Cr);
 
+        // shows image views
         imageLeft.setVisibility(View.VISIBLE);
         imageMiddle.setVisibility(View.VISIBLE);
         imageRight.setVisibility(View.VISIBLE);
 
     }
 
+    // function uses P2 intra prediction to generate bitmap
     private void IntraPredictionP2(){
 
+        //checks if bitmap has already been generated so it doesnt remake it
+        //if it has already been created just sets the image view to that bitmap
+
+        if(P2Y != null){
+            imageLeft.setImageBitmap(P2Y);
+            imageMiddle.setImageBitmap(P2refY);
+            imageRight.setImageBitmap(P2difY);
+            return;
+        }
+
+        // converts iamge to YCbCr
         Bitmap imageBmap = toYCbCr(originalImage);
         int width = originalImage.getWidth();
         int height = originalImage.getHeight();
 
-        Bitmap Y = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Bitmap refY = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Bitmap difY = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        // creates bit maps
+        P2Y = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        P2refY = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        P2difY = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
-
+        // for loop iterates through pixels
+        // uses P2 prediction to generate bitmap
         for(int x = 0; x < width; x++){
             for(int y = 0; y < height; y++){
 
+                // finds x/y index of b pixel
                 int xb = x;
                 int yb = y-1;
 
+                // ensures index is within bounds
                 if(yb < 0) yb = 0;
+
+                // gets pixel values
                 int X = Color.red(imageBmap.getPixel(x,y));
                 int B = Color.red(imageBmap.getPixel(xb, yb));
 
+                // finds diff of pixel values
                 int diff = X-B+128;
 
+                // checks if diff is within bounds
                 if(diff < 0) diff = 0;
                 else if (diff > 255) diff =255;
 
-                Y.setPixel(x,y, Color.rgb(X,X,X));
-                refY.setPixel(x,y, Color.rgb(B,B,B));
-                difY.setPixel(x,y,Color.rgb(diff,diff,diff));
+                // sets new pixel values
+                P2Y.setPixel(x,y, Color.rgb(X,X,X));
+                P2refY.setPixel(x,y, Color.rgb(B,B,B));
+                P2difY.setPixel(x,y,Color.rgb(diff,diff,diff));
             }
         }
 
-        imageLeft.setImageBitmap(Y);
-        imageMiddle.setImageBitmap(refY);
-        imageRight.setImageBitmap(difY);
+        imageLeft.setImageBitmap(P2Y);
+        imageMiddle.setImageBitmap(P2refY);
+        imageRight.setImageBitmap(P2difY);
 
         imageLeft.setVisibility(View.VISIBLE);
         imageMiddle.setVisibility(View.VISIBLE);
@@ -247,58 +283,79 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+    // function uses P4 intra prediction to generate bitmap
     private void IntraPredictionP4(){
+
+        //checks if bitmap has already been generated so it doesnt remake it
+        //if it has already been created just sets the image view to that bitmap
+
+        if(P4Y != null){
+            imageLeft.setImageBitmap(P4Y);
+            imageMiddle.setImageBitmap(P4refY);
+            imageRight.setImageBitmap(P4difY);
+            return;
+        }
 
         Bitmap imageBmap = toYCbCr(originalImage);
         int width = originalImage.getWidth();
         int height = originalImage.getHeight();
 
-        Bitmap Y = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Bitmap refY = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Bitmap difY = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        P4Y = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        P4refY = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        P4difY = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
-
+        // for loop iterates through pixels
+        // uses P4 prediction to generate bitmap
         for(int x = 0; x < width; x++){
             for(int y = 0; y < height; y++){
 
+                // finds x/y index of A pixel
                 int xa = x-1;
                 int ya = y;
 
+                // finds x/y index of B pixel
                 int xb = x;
                 int yb = y-1;
 
+                // finds x/y index of C pixel
                 int xc = x-1;
                 int yc = y-1;
 
+                // checks if indexes are within bounds
                 if(yb < 0) yb = 0;
                 if(xa < 0) xa = 0;
                 if(xc < 0) xc = 0;
                 if(yc < 0) yc = 0;
 
+                // gets pixel values
                 int X = Color.red(imageBmap.getPixel(x,y));
                 int A = Color.red(imageBmap.getPixel(xa, ya));
                 int B = Color.red(imageBmap.getPixel(xb, yb));
                 int C = Color.red(imageBmap.getPixel(xc, yc));
 
+                // predicted pixel value
                 int pred = A + B - C;
 
-
+                // dif pixel value
                 int diff = X-B+128;
 
+                // checks to ensure pixel value is within bounds
                 if(diff < 0) diff = 0;
                 else if (diff > 255) diff =255;
 
-                Y.setPixel(x,y, Color.rgb(X,X,X));
-                refY.setPixel(x,y, Color.rgb(pred,pred,pred));
-                difY.setPixel(x,y,Color.rgb(diff,diff,diff));
+                // sets new pixel values
+                P4Y.setPixel(x,y, Color.rgb(X,X,X));
+                P4refY.setPixel(x,y, Color.rgb(pred,pred,pred));
+                P4difY.setPixel(x,y,Color.rgb(diff,diff,diff));
             }
         }
 
-        imageLeft.setImageBitmap(Y);
-        imageMiddle.setImageBitmap(refY);
-        imageRight.setImageBitmap(difY);
+        // sets image views
+        imageLeft.setImageBitmap(P4Y);
+        imageMiddle.setImageBitmap(P4refY);
+        imageRight.setImageBitmap(P4difY);
 
+        // sets visibility of image views
         imageLeft.setVisibility(View.VISIBLE);
         imageMiddle.setVisibility(View.VISIBLE);
         imageRight.setVisibility(View.VISIBLE);
