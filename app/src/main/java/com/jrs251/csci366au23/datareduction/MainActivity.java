@@ -32,10 +32,6 @@ public class MainActivity extends AppCompatActivity {
 
         originalImage = BitmapFactory.decodeResource(getResources(), R.drawable.flat_small);
 
-
-
-        int Ypred, Y, originalY;
-
         // sets radio group listener
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -89,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         int R = Color.red(color);
         int G = Color.green(color);
         int B = Color.blue(color);
+
         // conversion
         YCbCr[0] = (int)(0.299*R+0.587*G+0.114*B);
         YCbCr[1] = (int)(-0.168736*R-0.331264*G+0.5*B + 128);
@@ -131,17 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
                 int avgCb = (Color.green(p1) + Color.green(p2) + Color.green(p3) + Color.green(p4)) / 4;
                 int avgCr = (Color.blue(p1) + Color.blue(p2) + Color.blue(p3) + Color.blue(p4)) / 4;
-                //int avgCb = Color.green(p1);
-                //int avgCr = Color.blue(p1);
 
-//                int p1 = imageBmap.getPixel(2*x, 2*y); // might have to 2*y
-//                int p2 = imageBmap.getPixel(2*x+1, 2*y+1);
-//
-//                int avgCb = (Color.green(p1)+Color.green(p2))/2;
-//                int avgCr = (Color.blue(p1)+Color.blue(p2))/2;
-//
-//                Y.setPixel(2*x,2*y,Color.rgb(Color.red(p1), Color.red(p1),Color.red(p1)));
-//                Y.setPixel(2*x+1,2*y+1,Color.rgb(Color.red(p2), Color.red(p2),Color.red(p2)));
                 Y.setPixel(2 * x, 2 * y, Color.rgb(Color.red(p1), Color.red(p1), Color.red(p1)));
                 Y.setPixel(2 * x + 1, 2 * y, Color.rgb(Color.red(p2), Color.red(p2), Color.red(p2)));
                 Y.setPixel(2 * x, 2 * y + 1, Color.rgb(Color.red(p3), Color.red(p3), Color.red(p3)));
@@ -198,14 +185,6 @@ public class MainActivity extends AppCompatActivity {
                 int avgCb = (Color.green(p1) + Color.green(p2) + Color.green(p3) + Color.green(p4)) / 4;
                 int avgCr = (Color.blue(p1) + Color.blue(p2) + Color.blue(p3) + Color.blue(p4)) / 4;
 
-//                int p1 = imageBmap.getPixel(2*x, 2*y); // might have to 2*y
-//                int p2 = imageBmap.getPixel(2*x+1, 2*y+1);
-//
-//                int avgCb = (Color.green(p1)+Color.green(p2))/2;
-//                int avgCr = (Color.blue(p1)+Color.blue(p2))/2;
-//
-//                Y.setPixel(2*x,2*y,Color.rgb(Color.red(p1), Color.red(p1),Color.red(p1)));
-//                Y.setPixel(2*x+1,2*y+1,Color.rgb(Color.red(p2), Color.red(p2),Color.red(p2)));
                 Y.setPixel(4 * x, y, Color.rgb(Color.red(p1), Color.red(p1), Color.red(p1)));
                 Y.setPixel(4 * x + 1, y, Color.rgb(Color.red(p2), Color.red(p2), Color.red(p2)));
                 Y.setPixel(4 * x+ 2, y, Color.rgb(Color.red(p3), Color.red(p3), Color.red(p3)));
